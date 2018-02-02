@@ -1,24 +1,25 @@
 {
-    "name":"__MSG_extName__",
-    "version":"0.0.6",
-    "description":"__MSG_description__",
-    "icons":{
-        "19":"img/icon-19.png",
-        "32":"img/icon-32.png",
-        "48":"img/icon-48.png",
-        "64":"img/icon-64.png",
-        "128":"img/icon-128.png"
+    "name": "__MSG_extName__",
+    "version": "0.0.6",
+    "description": "__MSG_description__",
+    "icons": {
+        "19": "img/icon-19.png",
+        "32": "img/icon-32.png",
+        "48": "img/icon-48.png",
+        "64": "img/icon-64.png",
+        "128": "img/icon-128.png"
     },
-    "background":{
+    "background": {
         "persistent": true,
-        "scripts":[ "js/consts.js",
-                    "js/notification.js",
-                    "js/download.js",
-                    "js/progress.js",
-                    "js/background.js"]
+        "scripts": ["js/consts.js",
+            "js/notification.js",
+            "js/download.js",
+            "js/progress.js",
+            "js/background.js"
+        ]
     },
-    "default_locale":"en",
-    "manifest_version":2,
+    "default_locale": "en",
+    "manifest_version": 2,
 
     "browser_action": {
         "default_icon": {
@@ -27,7 +28,7 @@
         },
         "default_title": "Better Downloader"
     },
-    
+
     "permissions": [
         "downloads",
         "downloads.open",
