@@ -1,8 +1,6 @@
 # Download Notifier for Google Chrome
 Get a desktop notification when your download finished.
 
-You could install the extension via <https://chrome.google.com/webstore/detail/download-notifier/gdekiloeocnfnochnkldpkmllmfiaeke>.
-
 ##Features implemented
 - Desktop notification for finished downloads
 - Open downloaded file / Reveal file from the notification UI
