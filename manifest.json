@@ -11,7 +11,7 @@
         "128": "img/icon-128.png"
     },
     "background": {
-        "persistent": true,
+        "persistent": false,
         "scripts": ["js/consts.js",
             "js/notification.js",
             "js/download.js",
