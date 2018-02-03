@@ -5,13 +5,9 @@
 
 /*====================================*/
 
-/**
- * Get the corresponding message to a specified key
- * @param {string} key  Key of the message
- * @return {string}
- */
-const _i18n = key => chrome.i18n.getMessage(key);
+// import { _i18n, _getOS } from "../js/utils";
 
+const _i18n = key => chrome.i18n.getMessage(key);
 
 const notificationId = 'BDNotification';
 const storageDownIdKey = 'BDNotificationDownID';
@@ -26,31 +22,18 @@ const defaultFolderIconUrl = prefix + '/img/default-folder-icon.png';
 
 
 
+// Current navigator's OS
+const os = (_ => {
+    const ua = navigator.userAgent.toLowerCase();
 
-/**
- * @typedef CurrentOS
- * @property {Windows} string "windows"
- * @property {Mac} string "Mac"
- * @property {Other} string "Other"
- */
-/**
- * Get the current navigator OS
- * @return {CurrentOS} The corresponding OS name
- */
-const os = (function() {
-    const _ua = navigator.userAgent.toLowerCase();
-    let _os;
-
-    if (_ua.length) {
-        if (_ua.includes('windows')) {
-            _os = 'Win';
-        } else {
-            _os = (_ua.includes('Mac') ? 'mac' : '');
+    if (ua.length) {
+        if (ua.includes('windows')) {
+            return 'Win';
         }
+        return (ua.includes('Mac') ? 'mac' : '');
     }
-
-    return _os;
-})();
+    return '';
+}).call();
 
 const ntfs = {};
 const opt = {
@@ -109,13 +92,11 @@ function showNotification({ state, id: did }) {
         chrome.downloads.search({ id: did }, ([item, ]) => {
 
             // set buttons' properties
-            const _openFileButton = {
+            const openFileButton = {
                 title: _i18n('nOpenFileTitle'),
                 iconUrl: fileIconUrl
             };
-            console.log(`nOpenFolderTitleWin${os}`);
-            console.log(_i18n(`nOpenFolderTitle${os}`));
-            const _openFolderButton = {
+            const openFolderButton = {
                 title: _i18n(`nOpenFolderTitle${os}`),
                 iconUrl: folderIconUrl
             };
@@ -125,7 +106,7 @@ function showNotification({ state, id: did }) {
             opt.title = _i18n('nDownFinished');
             // get the file name
             opt.message = item.filename.replace(/^.*[\\\/]/, '');;
-            opt.buttons = [_openFileButton, _openFolderButton];
+            opt.buttons = [openFileButton, openFolderButton];
 
 
             chrome.downloads.getFileIcon(did, { size: 32 }, function(url) {
@@ -133,7 +114,7 @@ function showNotification({ state, id: did }) {
             });
 
             function setFileIcon(url) {
-                opt.iconURL = url ? url : defaultIconUrl;
+                opt.iconUrl = url ? url : defaultIconUrl;
             }
 
             ntfs[did] = {

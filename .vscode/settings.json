@@ -1,0 +1,12 @@
+{
+    "json.schemas": [
+        // JSON schema for Google Extensions manifest fliles
+        {
+            "fileMatch": [
+                "manifest.json"
+            ],
+            "url": "http://json.schemastore.org/chrome-manifest"
+
+        }
+    ],
+}
