@@ -1,8 +1,8 @@
-const STOPICON = "/img/stop.png";
+export const STOPICON = "/img/stop.png";
 
-const PLAYICON = "/img/play.png";
+export const PLAYICON = "/img/play.png";
 
-const SOUNDS = [
+export const SOUNDS = [
     "/sound/ElevatorDing.wav",
     "/sound/AirPlaneDing.wav",
     "/sound/PopClipIn.wav",

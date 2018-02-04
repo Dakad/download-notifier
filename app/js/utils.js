@@ -6,7 +6,7 @@
      * @returns {HTMLElement}
      */
     /* export */
-    const _$ = id => document.getElementById(id);
+    export const _$ = id => document.getElementById(id);
 
     /**
      * Get the corresponding message to a specified key
@@ -14,14 +14,14 @@
      * @return {string}
      */
     /* export */
-    const _i18n = key => chrome.i18n.getMessage(key);
+    export const _i18n = key => chrome.i18n.getMessage(key);
 
     /**
      * Get the current navigator OS
      * @return {String} Windows => Win, Mac => Mac, otherwise empty.
      */
     /* export */
-    const _getOS = () => {
+    export const _getOS = () => {
         const _ua = navigator.userAgent.toLowerCase();
 
         if (_ua.length) {
