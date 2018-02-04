@@ -1,0 +1,56 @@
+{
+    "aHarmfulFileAlert": {
+        "message": "Le téléchargement en cours présente un risque pour votre système.\nRendez vous sur la page de télecharment en clicquant sur l'icone !?"
+    },
+    "author": {
+        "message": "DakaD"
+    },
+    "description": {
+        "message": "Être notifié à la fin d'un téléchargement."
+    },
+    "extName": {
+        "message": "Download Notifier"
+    },
+    "nDefaultFolderButtonTitle": {
+        "message": "Afficher dans le dossier par-défaut de Téléchargement"
+    },
+    "nDownFinished": {
+        "message": "Téléchargement fini"
+    },
+    "nDownIdNotFound": {
+        "message": "Oups °-°, le fichier a été effacé."
+    },
+    "nFileNotFound": {
+        "message": "°~° Oups, fichier introuvable !?."
+    },
+    "nOpenFileTitle": {
+        "message": "Ouvrir le fichier"
+    },
+    "nOpenFolderTitleMac": {
+        "message": "Afficher dans Finder"
+    },
+    "nOpenFolderTitleWin": {
+        "message": "Afficher dans l'Explorateur"
+    },
+    "version": {
+        "message": "0.0.5"
+    },
+    "oSoundLabel": {
+        "message": "Jouer un son après un téléchargement fini"
+    },
+    "settings": {
+        "message": "Paramètres"
+    },
+    "oDownloadShelfLabel": {
+        "message": "Afficher la barre de Téléchargement"
+    },
+    "oVolLabel": {
+        "message": "Volume"
+    },
+    "oTrackLabel": {
+        "message": "Son"
+    },
+    "oVolNotes": {
+        "message": "Volume here will be affected by system volume settings."
+    }
+}
