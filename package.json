@@ -2,19 +2,15 @@
     "name": "download-notifier",
     "version": "1.0.0",
     "description": "Better Downloader - Notification on download completed",
-    "scripts": {
-        "build": "rm -rf dist && NODE_ENV=production webpack -p",
-        "watch": "webpack --watch",
-        "test:integration": "npm run build && mocha ./test/integration/*-test.js",
-        "test:unit": "mocha ./test/unit/*-test.js",
-        "watch:test:unit": "watch-run -i -p './test/**/*,./lib/*.js,./lib/**/*.js,./index.js' mocha ./test/unit/*-test.js ./test/unit/**/*-test.js",
-        "test": "NODE_ENV=test npm run test:unit && npm run test:integration",
-        "selenium-install": "selenium-standalone install",
-        "selenium-start": "selenium-standalone start"
-    },
+    "author": "Dakad",
+    "license": "MIT",
+    "homepage": "https://github.com/Dakad/download-notifier#readme",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/Dakad/download-notifier.git"
+    },
+    "bugs": {
+        "url": "https://github.com/Dakad/download-notifier/issues"
     },
     "keywords": [
         "chrome-extension",
@@ -22,12 +18,16 @@
         "webpack",
         "es6"
     ],
-    "author": "Dakad",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/Dakad/download-notifier/issues"
+    "scripts": {
+        "build": "rm -rf dist && NODE_ENV=production webpack -p",
+        "watch:build": "webpack --watch",
+        "test:integration": "npm run build && mocha --require babel-core/register ./test/integration/*.spec.js",
+        "test:unit": "mocha --require babel-core/register ./test/unit/*.spec.js",
+        "watch:test:unit": "mocha --require babel-core/register --watch ./test/unit/**/*.spec.js",
+        "test": "NODE_ENV=test npm run test:unit && npm run test:integration",
+        "selenium-install": "selenium-standalone install",
+        "selenium-start": "selenium-standalone start"
     },
-    "homepage": "https://github.com/Dakad/download-notifier#readme",
     "devDependencies": {
         "babel-cli": "^6.26.0",
         "babel-core": "^6.26.0",
