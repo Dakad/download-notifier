@@ -5,7 +5,7 @@
     "scripts": {
         "build": "rm -rf dist && NODE_ENV=production webpack -p",
         "watch": "webpack --watch",
-        "test": "NODE_ENV=test jest"
+        "test": "NODE_ENV=test jest || true"
     },
     "repository": {
         "type": "git",
