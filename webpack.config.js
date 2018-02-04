@@ -1,4 +1,4 @@
-const webpack = require("webpack");
+const webpack = require('webpack');
 const fs = require('fs');
 const path = require('path');
 const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
@@ -21,11 +21,11 @@ module.exports = {
     },
 
     output: {
-        path: path.resolve(__dirname, "dist"),
-        filename: "[name].bundle.js"
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js'
     },
     // devServer: {
-    //     contentBase: path.join(__dirname, "dist"),
+    //     contentBase: path.join(__dirname, 'dist'),
     //     port: 9000
     // },
     // resolve: {
@@ -88,7 +88,7 @@ module.exports = {
                 }
             },
             {
-                test: /\.(s*)css$/,
+                test: /\.(s*)css$/i,
                 loader: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: 'css-loader'

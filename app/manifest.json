@@ -4,29 +4,29 @@
     "version": "0.0.6",
     "description": "__MSG_description__",
     "icons": {
-        "19": "img/icon-19.png",
-        "32": "img/icon-32.png",
-        "48": "img/icon-48.png",
-        "64": "img/icon-64.png",
-        "128": "img/icon-128.png"
+        "19": "assets/img/icon-19.png",
+        "32": "assets/img/icon-32.png",
+        "48": "assets/img/icon-48.png",
+        "64": "assets/img/icon-64.png",
+        "128": "assets/img/icon-128.png"
     },
     "background": {
         "persistent": false,
-        "scripts": ["js/consts.js",
-            "js/notification.js",
-            "js/download.js",
-            "js/progress.js",
-            "js/background.js"
+        "scripts": ["consts.js",
+            "notification.js",
+            "download.js",
+            "progress.js",
+            "background.js"
         ]
     },
     "default_locale": "en",
-
     "browser_action": {
+        "default_title": "Better Downloader",
         "default_icon": {
-            "19": "img/icon-19.png",
-            "38": "img/icon-48.png"
+            "19": "assets/img/icon-19.png",
+            "38": "assets/img/icon-48.png"
         },
-        "default_title": "Better Downloader"
+        "default_popup": "frontend/popup.html"
     },
 
     "permissions": [
@@ -38,11 +38,11 @@
         "management",
         "storage"
     ],
-    "options_page": "view/options_old.html",
+    "options_page": "frontend/options_old.html",
     "options_ui": {
-        "page": "view/options.html",
+        "page": "frontend/popup.html",
         "chrome_style": true,
         "open_in_tab": false
     },
-    "minimum_chrome_version": "40"
+    "minimum_chrome_version": "61"
 }
