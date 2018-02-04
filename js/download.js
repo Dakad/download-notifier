@@ -1,44 +1,37 @@
-//Author: Dingbao.ai [a.k.a ehaagwlke]
+//Author: Dakad
 
-//Date: 2015/Mar/21
-//Version: 0.2
-
-//Date: 2014/Mar/29
+//Date: 2018-01-01
 //Version: 0.1
 
-function updateBrowserActionIcon(){
-    var query = {'state': 'in_progress'},
-        count = 0,
-        i     = 0,
-        hPB   = new HProgressBar(),
-        imgData;
+/*====================================*/
 
-    downloadSearchHelpler(query, function(arr){
-        count = arr.length;
+/**
+ * Little helper for chrome.downloader
+ * @param {Object} q Querry - What to search for 
+ * @param {Function} cb Callback  
+ */
+const downloadSearchHelpler = (q, cb) => chrome.downloads.search(q, cb);
 
-        if(count){
-            setExtBadgeText(count+'');
-            chrome.browserAction.setBadgeBackgroundColor({color: "#00CD66"});
+function updateBrowserActionIcon() {
+
+    const hPB = new HProgressBar();
+
+    const setExtIcon = path => chrome.browserAction.setIcon(path)
+
+    const setExtBadgeText = t => chrome.browserAction.setBadgeText({ "text": t });
+
+
+    chrome.downloads.search({ 'state': 'in_progress' }, function(arr) {
+        const count = arr.length;
+
+        if (count) {
+            setExtBadgeText(count + '');
+            chrome.browserAction.setBadgeBackgroundColor({ color: "#00CD66" });
             // imgData = hPB.draw(0.5);
             // setExtIcon({imageData: imgData});
-        }else{
+        } else {
             setExtBadgeText('');
-            setExtIcon({path: '/img/icon-19.png'});
+            setExtIcon({ path: '/img/icon-19.png' });
         }
-    });
-}
-
-function setExtIcon(obj){
-    chrome.browserAction.setIcon(obj);
-}
-
-function setExtBadgeText(t){
-    var obj = {"text": t};
-    chrome.browserAction.setBadgeText(obj);
-}
-
-function downloadSearchHelpler(query, callback){
-    chrome.downloads.search(query, function(DLArray){
-        callback(DLArray);
     });
 }

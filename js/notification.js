@@ -1,249 +1,190 @@
-//Author: Dingbao.ai [a.k.a ehaagwlke]
+//Author: Dakad
 
-//Date: 2016/Mar/06
-//Version: 0.5
-
-//Date: 2016/Mar/05
-//Version: 0.4
-
-//Date: 2015/Jun/20
-//Version: 0.3
-
-//Date: 2015/Mar/21
-//Version: 0.2
-
-//Date: 2014/Mar/29
+//Date: 2018-01-01
 //Version: 0.1
 
-//*====================================*/
+/*====================================*/
 
-const notificationId = "BDNotification";
-const storageDownIdKey = "BDNotificationDownID";
+// import { _i18n, _getOS } from "../js/utils";
 
-var extId = chrome.i18n.getMessage("@@extension_id"),
-    prefix = "chrome-extension://" + extId,
+const _i18n = key => chrome.i18n.getMessage(key);
 
-    defaultIconUrl = prefix + "/img/icon-128.png",
-    fileIconUrl = prefix + "/img/file-icon.png",
-    folderIconUrl = prefix + "/img/folder-icon.png",
-    defaultFolderIconUrl = prefix + "/img/default-folder-icon.png";
+const notificationId = 'BDNotification';
+const storageDownIdKey = 'BDNotificationDownID';
 
-// The function for getting OS name
-var os = (function(){
-    var _ua = navigator.userAgent.toLowerCase(),
-        _os;
+const extId = _i18n('@@extension_id');
+const prefix = 'chrome-extension://' + extId;
 
-    if(_ua.length){
-        if(_ua.indexOf('windows') > -1){
-            _os = "windows";
-        }else if(_ua.indexOf('mac') > -1){
-            _os = "Mac";
-        }else{
-            _os = "other";
+const defaultIconUrl = prefix + '/img/icon-128.png';
+const fileIconUrl = prefix + '/img/file-icon.png';
+const folderIconUrl = prefix + '/img/folder-icon.png';
+const defaultFolderIconUrl = prefix + '/img/default-folder-icon.png';
+
+
+
+// Current navigator's OS
+const os = (_ => {
+    const ua = navigator.userAgent.toLowerCase();
+
+    if (ua.length) {
+        if (ua.includes('windows')) {
+            return 'Win';
         }
-    }else{
-        _os = "windows";
+        return (ua.includes('Mac') ? 'mac' : '');
     }
+    return '';
+}).call();
 
-    return _os;
-}());
+const ntfs = {};
+const opt = {
+    type: 'basic',
+    title: 'Download Notifier',
+    iconUrl: defaultIconUrl
+};
 
-var ntfs = {},
-    opt = {
-        type: "basic",
-        title: "Download Notifier",
-        iconUrl: defaultIconUrl
-    };
+const shelper = new StorageHelper();
 
-var shelper = new StorageHelper();
-
-function i18n(msg){
-    return chrome.i18n.getMessage(msg);
-}
 
 // A storage helper
-function StorageHelper(){
-    var ls = localStorage[storageDownIdKey];
+function StorageHelper() {
+    let ls = localStorage[storageDownIdKey];
 
-    this.set = set;
-    this.contains = contains;
-    this.remove = remove;
-
-    function set(did){
-        var arr = [];
-
-        if(ls){
-            arr = ls.split(',');
-            if(!contains(did) && !isNaN(did)){
+    this.set = did => {
+        if (ls) {
+            const arr = ls.split(',');
+            if (!isNaN(did) && !this.contains(did)) {
                 arr.push(did);
                 ls = arr.join(',');
             }
-        }else if(did && !isNaN(did)){
-            ls = did+'';
-        }
-
-        return ls;
-    }
-
-    function remove(did){
-        if(did && !isNaN(did)){
-            ls = ls.replace(did, '')
-                    .replace(',,',',')
-                    .replace(/^,*|,*$/g, '');
-        }
-        return ls;
-    }
-
-    function contains(did){
-        var arr = [],
-            i = 0,
-            al,
-            result = false;
-
-        if(ls){
-            arr = ls.split(',');
-            //console.log('arr = ', arr);
-
-            if(arr.length > 0){
-                al = arr.length;
-                for(; i < al; i++){
-                    if(parseInt(did, 10) === parseInt(arr[i], 10)){
-                        result = true;
-                        break;
-                    }
-                }
+        } else {
+            if (did && !isNaN(did)) {
+                ls = did + '';
             }
         }
-        return result;
+
+        return ls;
+    };
+
+
+    this.remove = did => {
+        if (did && !isNaN(did)) {
+            ls = ls.replace(did, '')
+                .replace(',,', ',')
+                .replace(/^,*|,*$/g, '');
+        }
+        return ls;
+    }
+
+    this.contains = did => {
+        if (ls) {
+            return ls.split(',')
+                .some((val) => parseInt(did, 10) === parseInt(val, 10));
+        }
+        return false;
     }
 }
 
-function showNotification(DItem){
-    var obj = DItem,
-        did,
-        fname,
-        _obj,
-        _openFileButton,
-        _openFolderButton,
-        _openFolderButtonTitle;
+function showNotification({ state, id: did }) {
 
-    if(os === "windows"){
-        _openFolderButtonTitle = i18n("nOpenFolderTitleWin");
-    }else if(os === "mac"){
-        _openFolderButtonTitle = i18n("nOpenFolderTitleMac");
-    }else{
-        _openFolderButtonTitle = i18n("nOpenFolderTitle");
-    }
+    if (state && state.current === 'complete') {
+        shelper.set(did);
 
-    if(obj.hasOwnProperty("state")){
-        if(obj.state.current === "complete"){
-            did = obj.id;
+        chrome.downloads.search({ id: did }, ([item, ]) => {
 
-            shelper.set(did);
+            // set buttons' properties
+            const openFileButton = {
+                title: _i18n('nOpenFileTitle'),
+                iconUrl: fileIconUrl
+            };
+            const openFolderButton = {
+                title: _i18n(`nOpenFolderTitle${os}`),
+                iconUrl: folderIconUrl
+            };
 
-            chrome.downloads.search({id: did}, function(DItemArray){
-                _obj = DItemArray[0];
-                
-                // get the file name
-                fname = _obj.filename.replace(/^.*[\\\/]/, '');
 
-                // set buttons' properties
-                _openFileButton = {
-                    title:  i18n("nOpenFileTitle"),
-                    iconUrl: fileIconUrl
-                };
+            // Assign a matching title for the notif
+            opt.title = _i18n('nDownFinished');
+            // get the file name
+            opt.message = item.filename.replace(/^.*[\\\/]/, '');;
+            opt.buttons = [openFileButton, openFolderButton];
 
-                _openFolderButton = {
-                    title: _openFolderButtonTitle,
-                    iconUrl: folderIconUrl
-                };
 
-                opt.title = i18n("nDownFinished");
-                opt.message = fname;
-                opt.buttons = [_openFileButton, _openFolderButton];
-                
-
-                chrome.downloads.getFileIcon(did, {size: 32}, function(url){
-                    setFileIcon(url);
-                });
-
-                function setFileIcon(url){
-                    opt.iconURL = url ? url : defaultIconUrl;
-                }
-
-                ntfs[did] = {};
-                ntfs[did]['opt'] = opt;
-                ntfs[did]['notificationId'] = notificationId + '|' + did;
-
-                // if we already have a notification shown
-                // we just clear it, and create a new one
-                // if not, we just create a new one.
-                chrome.notifications.getAll(function(obj){
-                    var notiId = ntfs[did].notificationId;
-
-                    playSound();
-
-                    if(obj.hasOwnProperty(notiId)){
-                        chrome.notifications.clear(notiId, function(){
-                            chrome.notifications.create(notiId, opt, function(nid){});
-                        });
-                    }else{
-                        chrome.notifications.create(notiId, opt, function(nid){});
-                    }
-                });
+            chrome.downloads.getFileIcon(did, { size: 32 }, function(url) {
+                setFileIcon(url);
             });
-        }
+
+            function setFileIcon(url) {
+                opt.iconUrl = url ? url : defaultIconUrl;
+            }
+
+            ntfs[did] = {
+                opt,
+                'notificationId': notificationId + '|' + did
+            };
+
+
+            // if we already have a notification shown
+            // we just clear it, and create a new one
+            // if not, we just create a new one.
+            chrome.notifications.getAll(function(item) {
+                const notiId = ntfs[did].notificationId;
+
+                playSound();
+
+                if (item.hasOwnProperty(notiId)) {
+                    chrome.notifications.clear(notiId, _ => {
+                        chrome.notifications.create(notiId, opt, _ => _);
+                    });
+                } else {
+                    chrome.notifications.create(notiId, opt, _ => _);
+                }
+            });
+        });
     }
+
 }
 
 // Play a sound when downloaded
-function playSound(){
+function playSound() {
     chrome.storage.sync.get([
-        'BDIsPlaySound', 
-        'BDSoundID', 
-        'BDVolOfSound'], 
-        function(obj){
-            if(obj.BDIsPlaySound){
-                var el    = document.createElement('audio');
+            'BDIsPlaySound',
+            'BDSoundID',
+            'BDVolOfSound'
+        ],
+        function({ BDVolOfSound, BDSoundID, BDIsPlaySound }) {
+            if (BDIsPlaySound) {
+                const el = document.createElement('audio');
 
-                el.src = SOUNDS[obj.BDSoundID];
+                el.src = SOUNDS[BDSoundID];
                 el.autoplay = true;
-                el.volume = obj.BDVolOfSound || 0.8;
+                el.volume = BDVolOfSound || 0.8;
             }
-    });
+        });
 }
 
 
-function openOrShowFileById(downId, action, alertContent){
-    if(!downId || !action){
+function openOrShowFileById(downId, action, alertContent) {
+    if (!downId || !action) {
         return;
     }
 
-    var _id = downId,
+    const _id = downId,
         _action = action,
         _alertContent = alertContent,
         _actions = {
-            "open": openFunc,
-            "show": showFunc
+            // open downloaded file by id.
+            'open': id => chrome.downloads.open(id),
+            // show downloaded file by id.
+            'show': id => chrome.downloads.show(id)
         };
 
-    // open downloaded file by id.
-    function openFunc(id){
-        chrome.downloads.open(id);
-    }
+    chrome.downloads.search({ id: _id }, function([item]) {
+        const notiId = ntfs[_id].notificationId;
 
-    // show downloaded file by id.
-    function showFunc(id){
-        chrome.downloads.show(id);
-    }
-
-    chrome.downloads.search({id: _id}, function(DItem){
-        var notiId = ntfs[_id].notificationId;
-
-        if(DItem[0].exists){
-            _actions[action](DItem[0].id);
-        }else{
-            chrome.notifications.clear(notiId, function(){});
+        if (item.exists) {
+            _actions[action](item.id);
+        } else {
+            chrome.notifications.clear(notiId, _ => {});
             delete ntfs[_id];
             shelper.remove(_id);
             alert(_alertContent);
@@ -251,23 +192,13 @@ function openOrShowFileById(downId, action, alertContent){
     });
 }
 
-function clearNotificationWhenExistChange(DObj){
-    var id = DObj.downid,
-        exists;
+function clearNotificationWhenExistChange({ downid, exists: downExists }) {
+    if (downid && downExists && shelper.contains(id) && !downExists.current) {
 
-    if(!id){
-        return;
-    }
-
-    if(DObj.hasOwnProperty('exists')){
-        exists = DObj.exists.current;
-    }
-
-    if(shelper.contains(id) && !exists){
-        chrome.notifications.getAll(function(obj){
-            var notiId = ntfs[id].notificationId;
-            if(obj.hasOwnProperty(notiId)){
-                chrome.notifications.clear(notiId, function(){
+        chrome.notifications.getAll(function(items) {
+            const notiId = ntfs[id].notificationId;
+            if (items.hasOwnProperty(notiId)) {
+                chrome.notifications.clear(notiId, function() {
                     delete ntfs[id];
                     shelper.remove(id);
                 });
@@ -276,34 +207,34 @@ function clearNotificationWhenExistChange(DObj){
     }
 }
 
-chrome.notifications.onButtonClicked.addListener(function(nid, btnIdx){
-    var downId = parseInt(nid.split('|')[1], 10),
-        strFileNotFound = i18n("nFileNotFound"),
-        strIdNotFound = i18n("nDownIdNotFound");
+chrome.notifications.onButtonClicked.addListener((nid, btnIdx) => {
+    const downId = parseInt(nid.split('|')[1], 10);
+    const strFileNotFound = _i18n('nFileNotFound');
+    const strIdNotFound = _i18n('nDownIdNotFound');
 
-    if(ntfs.hasOwnProperty(downId) && nid === ntfs[downId].notificationId){
-        if(btnIdx === 0){
-            if(shelper.contains(downId)){
-                openOrShowFileById(downId, "open", strFileNotFound);
-            }else{
-                chrome.notifications.clear(nid, function(){});
+    if (ntfs.hasOwnProperty(downId) && nid === ntfs[downId].notificationId) {
+        if (btnIdx === 0) {
+            if (shelper.contains(downId)) {
+                openOrShowFileById(downId, 'open', strFileNotFound);
+            } else {
+                chrome.notifications.clear(nid, _ => {});
                 delete ntfs[downId];
                 shelper.remove(downId);
                 alert(strIdNotFound);
             }
         }
 
-        if(btnIdx === 1){
-            if(shelper.contains(downId)){
-                openOrShowFileById(downId, "show", strFileNotFound);
-            }else{
-                chrome.notifications.clear(nid, function(){});
+        if (btnIdx === 1) {
+            if (shelper.contains(downId)) {
+                openOrShowFileById(downId, 'show', strFileNotFound);
+            } else {
+                chrome.notifications.clear(nid, _ => {});
                 delete ntfs[downId];
                 shelper.remove(downId);
                 alert(strIdNotFound);
             }
         }
-    }else{
+    } else {
         alert(strFileNotFound);
     }
 });

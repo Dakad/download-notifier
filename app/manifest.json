@@ -1,0 +1,48 @@
+{
+    "manifest_version": 2,
+    "name": "__MSG_extName__",
+    "version": "0.0.6",
+    "description": "__MSG_description__",
+    "icons": {
+        "19": "assets/img/icon-19.png",
+        "32": "assets/img/icon-32.png",
+        "48": "assets/img/icon-48.png",
+        "64": "assets/img/icon-64.png",
+        "128": "assets/img/icon-128.png"
+    },
+    "background": {
+        "persistent": false,
+        "scripts": ["consts.js",
+            "notification.js",
+            "download.js",
+            "progress.js",
+            "background.js"
+        ]
+    },
+    "default_locale": "en",
+    "browser_action": {
+        "default_title": "Better Downloader",
+        "default_icon": {
+            "19": "assets/img/icon-19.png",
+            "38": "assets/img/icon-48.png"
+        },
+        "default_popup": "frontend/popup.html"
+    },
+
+    "permissions": [
+        "downloads",
+        "downloads.open",
+        "downloads.shelf",
+        "notifications",
+        "tabs",
+        "management",
+        "storage"
+    ],
+    "options_page": "frontend/options_old.html",
+    "options_ui": {
+        "page": "frontend/popup.html",
+        "chrome_style": true,
+        "open_in_tab": false
+    },
+    "minimum_chrome_version": "61"
+}
