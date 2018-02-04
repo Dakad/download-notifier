@@ -21,9 +21,9 @@
     "scripts": {
         "build": "rm -rf dist && NODE_ENV=production webpack -p",
         "watch:build": "webpack --watch",
-        "test:integration": "npm run build && mocha ./test/integration/*.spec.js",
-        "test:unit": "mocha ./test/unit/*.spec.js",
-        "watch:test:unit": "mocha --watch ./test/unit/**/*.spec.js",
+        "test:integration": "npm run build && mocha --require babel-core/register ./test/integration/*.spec.js",
+        "test:unit": "mocha --require babel-core/register ./test/unit/*.spec.js",
+        "watch:test:unit": "mocha --require babel-core/register --watch ./test/unit/**/*.spec.js",
         "test": "NODE_ENV=test npm run test:unit && npm run test:integration",
         "selenium-install": "selenium-standalone install",
         "selenium-start": "selenium-standalone start"
