@@ -1,8 +1,10 @@
 /* global chrome */
+/* global navigator */
 
 /**
  * @author https://github.com/dakad
- * @overview Utilities Fonction
+ * @overview Utility Functions
+ * @version 1.0.0
  */
 
 /**

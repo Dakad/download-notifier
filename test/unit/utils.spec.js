@@ -8,7 +8,7 @@
 
 // Packages
 import chrome from 'sinon-chrome';
-import chai, { expect } from 'chai';
+import { expect } from 'chai';
 
 
 // Built-ins
