@@ -1,7 +1,9 @@
-//Author: Dakad
 
-//Date: 2018-01-02
-//Version: 0.1
+/**
+ * @author https://github.com/dakad
+ * @overview ProgressBar handler
+ * @version 1.0.0
+ */
 
 /*====================================*/
 
