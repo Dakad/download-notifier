@@ -18,3 +18,5 @@ export const SOUNDS = [
     "/sound/StoreDoorChime.wav",
     "/sound/TempleBell.wav"
 ];
+
+export const KEY_STORE_DOWNS_NOTIF = 'BDNotificationDownID';
