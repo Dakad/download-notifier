@@ -29,6 +29,11 @@
         "selenium-start": "selenium-standalone start"
     },
     "devDependencies": {
+        "@types/chai": "^4.1.2",
+        "@types/chrome": "0.0.59",
+        "@types/mocha": "^2.2.48",
+        "@types/sinon": "^4.1.3",
+        "@types/sinon-chrome": "^2.2.0",
         "babel-cli": "^6.26.0",
         "babel-core": "^6.26.0",
         "babel-loader": "^7.1.2",
@@ -45,6 +50,8 @@
         "mocha": "^5.0.0",
         "selenium-standalone": "^6.12.0",
         "sinon": "^4.2.2",
+        "sinon-chai": "^2.14.0",
+        "sinon-chrome": "^2.2.4",
         "style-loader": "^0.20.1",
         "url-loader": "^0.6.2",
         "vue-loader": "^14.1.1",
