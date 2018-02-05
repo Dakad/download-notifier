@@ -1,7 +1,14 @@
-//Author: Dakad
+/* global chrome */
+/* global navigator */
+/* global localStorage */
 
-//Date: 2018-01-01
-//Version: 0.1
+/**
+ * @author https://github.com/dakad
+ * @overview Background Script
+ * @version 1.0.0
+ * 
+ */
+
 
 /*====================================*/
 
@@ -192,15 +199,15 @@ function openOrShowFileById(downId, action, alertContent) {
     });
 }
 
-function clearNotificationWhenExistChange({ downid, exists: downExists }) {
-    if (downid && downExists && shelper.contains(id) && !downExists.current) {
+function clearNotificationWhenExistChange({ downID, exists: downExists }) {
+    if (downID && downExists && shelper.contains(downID) && !downExists.current) {
 
         chrome.notifications.getAll(function(items) {
-            const notiId = ntfs[id].notificationId;
+            const notiId = ntfs[downID].notificationId;
             if (items.hasOwnProperty(notiId)) {
                 chrome.notifications.clear(notiId, function() {
-                    delete ntfs[id];
-                    shelper.remove(id);
+                    delete ntfs[downID];
+                    shelper.remove(downID);
                 });
             }
         });

@@ -1,7 +1,11 @@
-//Author: Dakad
+/* global chrome */
 
-//Date: 2018-01-01
-//Version: 0.1
+/**
+ * @author https://github.com/dakad
+ * @overview Background Downloader script
+ * @version 1.0.0
+ * 
+ */
 
 /*====================================*/
 

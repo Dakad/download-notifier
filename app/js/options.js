@@ -1,7 +1,12 @@
-//Author: Dakad
+/* global chrome */
+/* global navigator */
 
-//Date: 2018-01-01
-//Version: 0.1
+/**
+ * @author https://github.com/dakad
+ * @overview Options script for the options page
+ * @version 1.0.0
+ */
+
 
 /*====================================*/
 
