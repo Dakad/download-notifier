@@ -1,35 +1,68 @@
 /**
- * Test Unit the util modules.
- *
+ * @author  https://github.com/dakad
+ * @overview Test Unit for the utils.js modules
  */
 
 // -------------------------------------------------------------------
 //  Dependencies
 
 // Packages
-const chai = require('chai');
+import chrome from 'sinon-chrome';
+import chai, { expect } from 'chai';
 
 
 // Built-ins
 
-// Mine
-const Utils = require('../../app/js/utils');
 
+// Mine
+import { _i18n, _getOS } from '../../app/js/utils.js';
 
 // -------------------------------------------------------------------
 //  Properties
-const expect = chai.expect;
+// chai.use(require('sinon-chai'));
 
 
-describe('Module :  Utils', function() {
-    it('should be an object', function() {
-        expect(Utils).to.be.a('object')
-            .and.to.contains.all.keys(['_$', '_i18n', '_getOS']);
+describe('Module :  utils.js', function() {
+
+    before(() => global.chrome = chrome);
+
+    afterEach(() => {
+        chrome.flush();
     });
 
-    describe('_i18n', function() {
-        it('should be a function', function() {
-            expect(Utils._i18n).to.be.a('function')
-        });
+
+    it('should get i18n message with no args', function() {
+        expect(chrome.i18n.getMessage.notCalled, 'i18n.getMessage should not be called').to.be.ok;
+        const msg = _i18n();
+        expect(chrome.i18n.getMessage.calledOnce, 'i18n.getMessage should be called').to.be.ok;
+        expect(
+            chrome.i18n.getMessage.withArgs('').calledOnce,
+            'i18n.getMessage should be called with specified args'
+        ).to.be.ok;
     });
+
+    it('should get i18n message with args', function() {
+        expect(chrome.i18n.getMessage.notCalled, 'i18n.getMessage should not be called').to.be.ok;
+        const key = 'extName';
+        _i18n(key);
+        expect(chrome.i18n.getMessage.calledOnce, 'i18n.getMessage should be called').to.be.ok;
+        expect(
+            chrome.i18n.getMessage.withArgs(key).called,
+            'i18n.getMessage should be called with specified args'
+        ).to.be.ok;
+    });
+
+
+    it('should return data', () => {
+        // var I18nPlugin = chrome.plugins.I18nPlugin;
+
+        // chrome.registerPlugin(new I18nPlugin());
+
+    });
+
+
+
+
+
+    after(() => delete global.chrome);
 });
