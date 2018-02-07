@@ -8,7 +8,7 @@
 
 // Packages
 import { expect } from 'chai';
-import sinon,{ spy, stub } from 'sinon';
+// import sinon,{ spy, stub } from 'sinon';
 
 // Built-ins
 
@@ -16,7 +16,7 @@ import sinon,{ spy, stub } from 'sinon';
 // Mine
 import * as mockLocalStorage from '../mock/localStorage.mock';
 import { KEY_STORE_DOWNS_NOTIF } from '../../app/js/consts';
-import { _StorageHelper, DownloadStorageHelper } from '../../app/js/helpers/storage.js';
+import { _StorageHelper, DownNotifStorageHelper } from '../../app/js/helpers/storage.js';
 
 
 // -------------------------------------------------------------------
@@ -27,7 +27,7 @@ import { _StorageHelper, DownloadStorageHelper } from '../../app/js/helpers/stor
 // 
 
 
-describe('Module :  helper/storage.js', function() {
+describe('Module : helper/storage.js', function() {
 
     before(() => {
         global.localStorage = mockLocalStorage;
@@ -124,81 +124,151 @@ describe('Module :  helper/storage.js', function() {
     }); // _StorageHelper
 
 
-    describe.skip('DownloadStorageHelper', function() {
+    describe('DownNotifStorageHelper', function() {
         let downNotifStoreHelp;
-        const spyStoreHelper = spy(_StorageHelper);
-        
+
         before(() => {
-            downNotifStoreHelp = new DownloadStorageHelper();
-            // mockLocalStorage.setItem(KEY_STORE_DOWNS_NOTIF, [])
+            downNotifStoreHelp = new DownNotifStorageHelper();
         });
 
         afterEach(() => {
             global.localStorage.clear();
+            downNotifStoreHelp._store = {};
         });
 
         it('should not be empty', () => {
-            expect(DownloadStorageHelper).to.be.a('function');
-            expect(spyStoreHelper.called).to.be.true;
+            expect(DownNotifStorageHelper).to.be.a('function');
+            // expect(spyStoreHelper.called, 'must have an instance of StorageHelper').to.be.true;
             
-            expect(downNotifStoreHelp.store).to.not.null;
-            expect(downNotifStoreHelp).to.have.all.keys(['save', 'get', 'remove'])
+            expect(downNotifStoreHelp).to.have.all.keys(['_store','save', 'contains', 'get','remove', 'clear'])
         });
 
-    //     it('should save the data', () => {
-    //         expect(downNotifStoreHelp.save).to.be.a('function');
-    //         const wrongIds = [null, { 'a': 1, 'b': [1, 2, 2, 3] }, Error('test')];
-    //         wrongIds.forEach((id) => {
-    //             expect(downNotifStoreHelp.save(id)).to.throws();
-    //         })[
-    //             ['a', '1234567890ß', '', 'c', 'mocky', 'd', 'k']
-    //         ].forEach((item) => {
-    //             const [key, val] = item;
-    //             downNotifStoreHelp.save(key, val);
+        it('should save the id', () => {
+            expect(downNotifStoreHelp.save).to.be.a('function');
+            const wrongIds = [null,'','a','mocky', { 'a': 1, 'b': [1, 2, 2, 3] }, Error('test')];
+            wrongIds.forEach((id) => {
+                expect(_ => downNotifStoreHelp.save(id,'mocky'))
+                    .to.throws(TypeError);
+            });
 
-    //             expect(global.localStorage, 'Not value stored with key: ' + key).to.contains(key);
+            [
+                ['12367890','6108bd1c-332f-5583-bd46'],
+                [123, 'guhnercis-jute-wa'],
+                ['2976','78fbfedcd8f0'],
+                [55,'Jaagu ujo hop. * 1f67e957'],
+            ].forEach(([downId,notifId]) => {
+                const saved = downNotifStoreHelp.save(downId, notifId);
+                expect(saved, 'Not finished process').to.be.true;
+            });
 
-    //             expect(global.localStorage[key], 'Not matching value').to.be.eq(JSON.stringify(val))
-    //         });
+            expect(downNotifStoreHelp.save('123', 'mocky')).to.be.false;
+        });
 
-    //     });
+        it.only('should get the id', () => {
+            expect(downNotifStoreHelp.get).to.be.a('function');
+            const wrongIds = [null,'','a','mocky', { 'a': 1, 'b': [1, 2, 2, 3] }, Error('test')];
+            wrongIds.forEach((id) => {
+                expect(_ => downNotifStoreHelp.get(id)).to.throws(TypeError);
+            });
+            
+            // Save before some fake ids
+            const datas = [
+                ['12367890','6108bd1c-332f-5583-bd46'],
+                [123, 'guhnercis-jute-wa'],
+                ['2976','78fbfedcd8f0'],
+                [82976,'78fbfedcd8f0'],
+                [55,'Jaagu ujo hop. * 1f67e957'],
+            ];
+            
+            datas.forEach(ids=>downNotifStoreHelp.save(...ids));
 
+            datas.forEach(([downId,notifId]) => {
+                expect(notifId).to.be.equal(downNotifStoreHelp.get(downId));
+            });
 
-    //     it('should get the saved data', () => {
-    //         expect(downNotifStoreHelp.get).to.be.a('function');
-    //         [
-    //             ['a', null],
-    //             ['b', ''],
-    //             ['c', 'mocky'],
-    //             ['d', [1, 2, 3, 4]],
-    //             ['k', { 'a': 1, 'b': [1, 2, 2, 3] }]
-    //         ].forEach((item) => {
-    //             const [key, val] = item;
-    //             downNotifStoreHelp.save(key, val);
-    //             expect(downNotifStoreHelp.get(key), 'Not value stored with key: ' + key).to.not.be.null
-    //                 .and.to.be.eq(val)
-    //         });
-    //     });
+        });
 
+        it('should contains the id', () => {
+            expect(downNotifStoreHelp.contains).to.be.a('function');
+            const wrongIds = [null,'','a','mocky', { 'a': 1, 'b': [1, 2, 2, 3] }, Error('test')];
+            wrongIds.forEach((id) => {
+                expect(_ => downNotifStoreHelp.contains(id)).to.throws(TypeError);
+            });
+            
+            // Save before some fake ids
+            [
+                ['12367890','6108bd1c-332f-5583-bd46'],
+                [123, 'guhnercis-jute-wa'],
+                ['2976','78fbfedcd8f0'],
+                [82976,'78fbfedcd8f0'],
+                [55,'Jaagu ujo hop. * 1f67e957'],
+            ].forEach(ids=>downNotifStoreHelp.save(...ids));
 
-    //     it('should remove the saved data', () => {
-    //         expect(downNotifStoreHelp.remove).to.be.a('function');
-    //         [
-    //             ['c', 'mocky'],
-    //             ['d', [1, 2, 3, 4]],
-    //             ['k', { 'a': 1, 'b': [1, 2, 2, 3] }]
-    //         ].forEach((item) => {
-    //             const [key, val] = item;
-    //             downNotifStoreHelp.save(key, val);
-    //             downNotifStoreHelp.remove(key);
-    //             expect(global.localStorage[key], 'Value still stored for key: ' + key).to.be.null;
-    //         });
-    //     });
+            [
+                ['12367890',true],
+                [1203,false],
+                ['82976', true],
+                [100, false],
+                [55,true]
+            ].forEach(([id,isIn]) => {
+                expect(isIn,id).to.be.equal(downNotifStoreHelp.contains(id));
+            });
 
+        });
 
+        it('should remove the id', () => {
+            expect(downNotifStoreHelp.remove).to.be.a('function');
+            const wrongIds = [null,'','a','mocky', { 'a': 1, 'b': [1, 2, 2, 3] }, Error('test')];
+            wrongIds.forEach((id) => {
+                expect(_ => downNotifStoreHelp.remove(id)).to.throws(TypeError);
+            });
+            
+            // Save before some fake ids
+            [
+                ['12367890','6108bd1c-332f-5583-bd46'],
+                [123, 'guhnercis-jute-wa'],
+                ['2976','78fbfedcd8f0'],
+                [82976,'78fbfedcd8f0'],
+                [55,'Jaagu ujo hop. * 1f67e957'],
+            ].forEach(ids=>downNotifStoreHelp.save(...ids));
+            
+            [
+                ['12367890',true],
+                [123,false],
+                ['2976', false],
+                [55,true]
+            ].forEach(([id,isIn]) => {
+                let msg = `Id : ${id} removed`;
+                
+                if(!isIn){
+                    msg = `Id : ${id} not removed`;
+                    downNotifStoreHelp.remove(id);
+                }
+                
+                expect(isIn,msg).to.be.equal(downNotifStoreHelp.contains(id));
+            });
 
+        });
+    
+        it('should clear all IDs', () => {
+           expect(downNotifStoreHelp.clear).to.be.a('function');
+           
+            // Save before some fake ids
+            [
+                ['12367890','6108bd1c-332f-5583-bd46'],
+                [123, 'guhnercis-jute-wa'],
+                ['2976','78fbfedcd8f0'],
+                [82976,'78fbfedcd8f0'],
+                [55,'Jaagu ujo hop. * 1f67e957'],
+            ].forEach(ids=>downNotifStoreHelp.save(...ids));
+            
+           downNotifStoreHelp.clear();
+           
+           expect(downNotifStoreHelp._store).to.be.empty;
+            
+        });
 
-    }); // DownloadStorageHelper
+    }); // DownNotifStorageHelper
 
 
 });
