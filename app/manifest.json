@@ -12,11 +12,11 @@
     },
     "background": {
         "persistent": false,
-        "scripts": ["consts.js",
-            "notification.js",
-            "download.js",
-            "progress.js",
-            "background.js"
+        "scripts": ["shared.bundle.js",
+            "notification.bundle.js",
+            "download.bundle.js",
+            "progress.bundle.js",
+            "background.bundle.js"
         ]
     },
     "default_locale": "en",
@@ -26,7 +26,7 @@
             "19": "assets/img/icon-19.png",
             "38": "assets/img/icon-48.png"
         },
-        "default_popup": "frontend/popup.html"
+        "default_popup": "options.html"
     },
 
     "permissions": [
@@ -38,9 +38,9 @@
         "management",
         "storage"
     ],
-    "options_page": "frontend/options_old.html",
+    "options_page": "options_old.html",
     "options_ui": {
-        "page": "frontend/popup.html",
+        "page": "options.html",
         "chrome_style": true,
         "open_in_tab": false
     },
