@@ -13,8 +13,8 @@
 // import { _$, _i18n } from "../js/utils.js";
 // import {
 //     SOUNDS,
-//     STOPICON,
-//     PLAYICON
+//     ICON_STOP,
+//     ICON_PLAY
 // } from "../js/consts.js";
 
 
@@ -83,7 +83,7 @@
                 audio.pause();
                 audio.currentTime = 0;
                 isPlaying = false;
-                mediaControlNode.src = PLAYICON;
+                mediaControlNode.src = ICON_PLAY;
             }
         });
 
@@ -103,7 +103,7 @@
         soundSelectNode.addEventListener('change', () => {
             if (isPlaying) {
                 audio.pause();
-                mediaControlNode.src = STOPICON;
+                mediaControlNode.src = ICON_STOP;
                 isPlaying = false;
             }
 
@@ -111,7 +111,7 @@
             audio.play();
 
             chrome.storage.sync.set({ 'BDSoundID': soundSelectNode.value });
-            mediaControlNode.src = PLAYICON;
+            mediaControlNode.src = ICON_PLAY;
         }, false);
 
         //Media playback control
@@ -131,22 +131,22 @@
         // Should be call on some init function()
         audio.addEventListener('play', () => {
             isPlaying = true;
-            mediaControlNode.src = STOPICON;
+            mediaControlNode.src = ICON_STOP;
         }, false);
 
         audio.addEventListener('playing', () => {
             isPlaying = true;
-            mediaControlNode.src = STOPICON;
+            mediaControlNode.src = ICON_STOP;
         }, false);
 
         audio.addEventListener('pause', () => {
             isPlaying = false;
-            mediaControlNode.src = PLAYICON;
+            mediaControlNode.src = ICON_PLAY;
         }, false);
 
         audio.addEventListener('end', () => {
             isPlaying = false;
-            mediaControlNode.src = PLAYICON;
+            mediaControlNode.src = ICON_PLAY;
         }, false);
     }
 
