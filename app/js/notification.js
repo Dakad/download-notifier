@@ -20,14 +20,16 @@ import ChromePromise from 'chrome-promise';
 
 
 // Mine
-import { _i18n, _getOS } from "../js/utils";
-import { DownloadStorageHelper } from './helpers/storage';
+import { _i18n } from "../js/utils";
+import { DownNotifStorageHelper } from './helpers/storage';
 import { 
     SOUNDS,
-    KEY_STORE_DOWNS_NOTIF,
+    KEY_STORE_DOWNS_NOTIF, KEY_EXT_ID, 
+    KEY_LABEL_FILE_NOT_FOUND,KEY_LABEL_DOWNLOAD_NOT_FOUND,
     KEY_SOUND_VOL, KEY_SOUND_SELECT_ID, KEY_SOUND_IS_PLAYED,
     PATH_ICON_NOTIF, PATH_ICON_FILE, PATH_ICON_FOLDER,
-    KEY_LABEL_NOTIF_BTN_OPEN, KEY_LABEL_NOTIF_BTN_SHOW,
+    KEY_LABEL_NOTIF_BTN_OPEN, KEY_LABEL_NOTIF_BTN_SHOW,KEY_LABEL_NOTIF_TITLE,
+    
 } from './consts';
 
 
@@ -36,27 +38,18 @@ import {
 const NOTIF_BTN_OPEN = 0;
 const NOTIF_BTN_SHOW = 1;
 
-
-const notificationId = '';
-
-const extId  = _i18n('@@extension_id');
-const prefix = 'chrome-extension://' + extId;
-
-const notifIconUrl = prefix + PATH_ICON_NOTIF ;
-const fileIconUrl    = prefix + PATH_ICON_FILE;
-const folderIconUrl  = prefix + PATH_ICON_FOLDER;
-
-
-// Current navigator's OS
-const os = _getOS();
-
-const ntfs = {};
-
 // Chrome Promised
-const chromep = new ChromePromise();
+const _chromep = new ChromePromise();
 
-const downStoreHelper = new DownloadStorageHelper();
+// Helper for the storage of notification Ids
+const _downNotifStore = new DownNotifStorageHelper();
 
+const extId  = _i18n(KEY_EXT_ID);
+const _prefix = 'chrome-extension://' + extId;
+
+const _strFileNotFound = _i18n(KEY_LABEL_FILE_NOT_FOUND);
+const _strIdNotFound    = _i18n(KEY_LABEL_DOWNLOAD_NOT_FOUND);
+const _strNotifTitle   = _i18n(KEY_LABEL_NOTIF_TITLE);
 
 
 /**
@@ -82,152 +75,170 @@ const _playSound = function () {
  * Create the notification's body.
  *
  */
-const _createNotification = async (downId,filename) => {
+const _createNotification = async (downId,filename='') => {
     const notif = {
         type: 'basic',
-        title: _i18n('extName'),
-        iconUrl: notifIconUrl
+        // title: _i18n('extName'),
+        title : _strNotifTitle,
+        message : filename.replace(/^.*[\\\/]/, ''),
+        iconUrl: _prefix + PATH_ICON_NOTIF // Notification's icon 
     };
     
-    // set buttons' properties
+    // Set buttons' properties
     const openFileButton = {
         title: _i18n(KEY_LABEL_NOTIF_BTN_OPEN),
-        iconUrl : fileIconUrl
+        iconUrl : _prefix + PATH_ICON_FILE // Icon for the button 'Open file'
     };
+    
     const openFolderButton = {
         title: _i18n(KEY_LABEL_NOTIF_BTN_SHOW),
-        iconUrl: folderIconUrl
+        iconUrl: _prefix + PATH_ICON_FOLDER // Icon for the button 'Show in Folder'
     };
 
     // Assign a matching title for the notif
-    opt.title = _i18n('nDownFinished');
-    // get the file name
-    opt.message = filename.replace(/^.*[\\\/]/, '');
-    opt.buttons = [openFileButton, openFolderButton];
     
-    const downFileIcon = await chromep.downloads.getFileIcon(downId, { size: 32 });
-
-    opt.iconUrl = url ? url : notifIconUrl;
+    // Get the file name
     
+    // Register action's buttons
+    notif.buttons = [openFileButton, openFolderButton];
+    
+    const downFileIcon = await _chromep.downloads.getFileIcon(downId, { size: 32 });
+    if(downFileIcon){
+       notif.iconUrl = downFileIcon; 
+    }
+    
+    return notif;
 };
 
 
+/**
+ * Display a notification for a completed download
+ * 
+ * 
+ *
+ */
 export async function showNotification({ state, id: downId }) {
-    
     if (state && state.current === 'complete') {
+        // Get the downloaded item
+        const [item, ] = await _chromep.downloads.search({ id : downId });
         
-        downStoreHelper.save(downId);
+        const notif = _createNotification(downId, item.filename);
+
+        // if we already have a notification shown
+        const items = await _chromep.notifications.getAll();
+        let notifId = _downNotifStore.get(downId);
+
+        // we just clear it, and create a new one
+        if (notifId && items.hasOwnProperty(notifId)) {
+            await _chromep.notifications.clear(notifId);
+        }
         
-        chrome.downloads.search({ id: downId }, ([item, ]) => {
+        _playSound();
 
-
-            ntfs[downId] = {
-                opt,
-                'notificationId': notificationId + '|' + downId
-            };
-
-
-            // if we already have a notification shown
-            // we just clear it, and create a new one
-            // if not, we just create a new one.
-            chrome.notifications.getAll(function(item) {
-                const notiId = ntfs[downId].notificationId;
-
-                playSound();
-
-                if (item.hasOwnProperty(notiId)) {
-                    chrome.notifications.clear(notiId, _ => {
-                        chrome.notifications.create(notiId, opt, _ => _);
-                    });
-                }
-                else {
-                    chrome.notifications.create(notiId, opt, _ => _);
-                }
-            });
-        });
+        notifId = await _chromep.notifications.create(null,notif);
+        
+        _downNotifStore.save(downId, notifId);
     }
-
 }
 
 
-
-function openOrShowFileById(downId, action, alertContent) {
-    if (!downId || !action) {
-        return;
+/**
+ * Open/Show a downloaded file.
+ * 
+ * @private
+ * @async 
+ *
+ * @param {Integer} downId The downloaded item Id. 
+ * @param {string} action The requested action. Can only be 'open'  or 'show'
+ * @throws {Error} If one the parameter is missing.
+ * @throws {TypeError} If the action is incorrect.
+ * @throws {TypeError} If the downId is incorrect.
+ */
+const _openOrShowFileById = async function (downId, action) {
+    if (!downId) {
+        throw new Error('|°^_^°| -> Missing the download Id');
     }
+    
+    if (!action) {
+        throw new Error('|°^_^°| -> Missing the action for the downloaded file');
+    }
+    
+    if(!(action =='action' && action === 'show')){
+        throw new Error('|°^_^°| -> Unknown action. Only \'open\' or \'show\'')
+    }
+    
+    const actions = {
+        // open downloaded file by id.
+        'open': id => chrome.downloads.open(id),
+        // show downloaded file by id.
+        'show': id => chrome.downloads.show(id)
+    };
 
-    const _id = downId,
-        _action = action,
-        _alertContent = alertContent,
-        _actions = {
-            // open downloaded file by id.
-            'open': id => chrome.downloads.open(id),
-            // show downloaded file by id.
-            'show': id => chrome.downloads.show(id)
-        };
+    const [item,] = await _chromep.downloads.search({ id: downId });
+    
+    const notifId = _downNotifStore.get(downId);
+    
+    // If not already deleted, execute requested action
+    if (item.exists) {
+        actions[action].call(item.id);
+    } else {
+        // The downloaded item have been deleted
+        chrome.notifications.clear(notifId, _ => {});
+        _downNotifStore.remove(downId);
+        alert(_strFileNotFound);
+    }
+}
 
-    chrome.downloads.search({ id: _id }, function([item]) {
-        const notiId = ntfs[_id].notificationId;
 
-        if (item.exists) {
-            _actions[action](item.id);
+/**
+ * description
+ * 
+ * @async
+ * @private
+ * 
+ * 
+ * @throws {TypeError} If the downId is incorrect.
+ */
+export async function clearNotificationWhenExistChange({ downId, exists: downExists }) {
+    if (downId && downExists && _downNotifStore.contains(downId) && !downExists) {
+        const notifId = _downNotifStore.get(downId);
+
+        const items = await chrome.notifications.getAll();
+
+        if (items.hasOwnProperty(notifId)) {
+            chrome.notifications.clear(notifId, _ => {});
+            _downNotifStore.remove(downId);
         }
-        else {
-            chrome.notifications.clear(notiId, _ => {});
-            delete ntfs[_id];
-            downStoreHelper.remove(_id);
-            alert(_alertContent);
-        }
-    });
-}
-
-function clearNotificationWhenExistChange({ downID, exists: downExists }) {
-    if (downID && downExists && downStoreHelper.contains(downID) && !downExists.current) {
-
-        chrome.notifications.getAll(function(items) {
-            const notiId = ntfs[downID].notificationId;
-            if (items.hasOwnProperty(notiId)) {
-                chrome.notifications.clear(notiId, function() {
-                    delete ntfs[downID];
-                    downStoreHelper.remove(downID);
-                });
-            }
-        });
     }
 }
 
-
-chrome.notifications.onButtonClicked.addListener((nid, btnIdx) => {
-    const downId = parseInt(nid.split('|')[1], 10);
-    const strFileNotFound = _i18n('nFileNotFound');
+/**
+ * Handler for the action's button on notification. 
+ * If the input notification Id is stored, then the requested action will be executed.
+ * Otherwise, it means the download have been deleted then clear the notification and alert the user.
+ * 
+ * @param {string} notifId The notiffication Id.
+ * @param {Numbber} btnType The button type. Can only be 0 or 1.
+ * 
+ */
+export const handleClickonActionsButton = function handleActBtn (notifId, btnType) {
+    const downId = _downNotifStore.getKey(notifId);
     const strIdNotFound = _i18n('nDownIdNotFound');
 
-    if (ntfs.hasOwnProperty(downId) && nid === ntfs[downId].notificationId) {
-        if (btnIdx === 0) {
-            if (downStoreHelper.contains(downId)) {
-                openOrShowFileById(downId, 'open', strFileNotFound);
-            }
-            else {
-                chrome.notifications.clear(nid, _ => {});
-                delete ntfs[downId];
-                downStoreHelper.remove(downId);
-                alert(strIdNotFound);
-            }
+    if (downId) {
+        if (btnType === NOTIF_BTN_OPEN) {
+            _openOrShowFileById(downId, 'open');
         }
 
-        if (btnIdx === 1) {
-            if (downStoreHelper.contains(downId)) {
-                openOrShowFileById(downId, 'show', strFileNotFound);
-            }
-            else {
-                chrome.notifications.clear(nid, _ => {});
-                delete ntfs[downId];
-                downStoreHelper.remove(downId);
-                alert(strIdNotFound);
-            }
+        if (btnType === NOTIF_BTN_SHOW) {
+            _openOrShowFileById(downId, 'show');
         }
+    } else {
+        chrome.notifications.clear(notifId, _ => _);
+        _downNotifStore.remove(downId);
+        alert(_strFileNotFound);
     }
-    else {
-        alert(strFileNotFound);
-    }
-});
+}
+
+
+chrome.notifications.onButtonClicked.addListener(handleClickonActionsButton);

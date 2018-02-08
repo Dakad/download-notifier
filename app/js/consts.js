@@ -7,9 +7,14 @@
 
 
 
-export const KEY_STORE_DOWNS_NOTIF = 'BDNotificationDownID';
+export const KEY_STORE_DOWNS_NOTIF = 'BDNotifications';
 
-export const KEY_STORE_NOTIF = 'BDNotification';
+export const KEY_EXT_ID = '@@extension_id';
+
+export const KEY_LABEL_FILE_NOT_FOUND = 'nFileNotFound';
+
+export const KEY_LABEL_DOWNLOAD_NOT_FOUND = 'nDownIdNotFound';
+
 
 
 // -------------------------------------------------------------------
@@ -44,9 +49,9 @@ export const PATH_ICON_FILE = '/img/icon/file.png';
 
 export const PATH_ICON_FOLDER = '/img/icon/folder.png';
 
-export const KEY_LABEL_NOTIF_BTN_OPEN = 'nOpenFileTitle'
+export const KEY_LABEL_NOTIF_BTN_OPEN = 'nOpenFileTitle';
 
-export const KEY_LABEL_NOTIF_BTN_SHOW = 'nOpenFolderTitle'
+export const KEY_LABEL_NOTIF_BTN_SHOW = 'nOpenFolderTitle';
 
-export const KEY_LABEL_NOTIF_TITLE = 'nDownFinished'
+export const KEY_LABEL_NOTIF_TITLE = 'nDownFinished';
 

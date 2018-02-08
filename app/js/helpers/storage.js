@@ -63,7 +63,7 @@ export function DownNotifStorageHelper() {
     
     /**
      * Check if the input ID is an Integer
-     * @param {Number|string} The download Id.
+     * @param {Number|string} downId The download Id.
      * @throws TypeError if not an Integer.
      */
     const checkDownloadId = (downId) => {
@@ -77,8 +77,8 @@ export function DownNotifStorageHelper() {
     /**
      * Save the download Id into storage.
      * 
-     * @param {Number|string} The download Id.
-     * @param {Number|string} The notification Id.
+     * @param {Number|string} downId The download Id.
+     * @param {Number|string} notifId The notification Id.
      * @return {boolean} true if done otherwise false if already stored.
      * @throws {TypeError} if the Id is not an number.
      */
@@ -96,20 +96,19 @@ export function DownNotifStorageHelper() {
     /**
      * Check if already saved this id.
      * 
-     * @param {Number|string} The download Id.
+     * @param {Number|string} downId The download Id.
      * @return {boolean} true if done otherwise false if not saved.
      * @throws {TypeError} if the Id is not an number.
      */
     this.contains = (downId) => {
         downId = checkDownloadId(downId);
-        
         return this._store.hasOwnProperty(downId);
     };
     
     /**
      * Retrieve wint the input Id the corresponding notifications Id.
      * 
-     * @param {Number|string} The download Id.
+     * @param {Number|string} downId The download Id.
      * @return {string} the notification Id or null if not found.
      * @throws {TypeError} if the Id is not an number.
      */
@@ -120,7 +119,7 @@ export function DownNotifStorageHelper() {
     /**
      * Remove the download Id from storage.
      * 
-     * @param {Number|string} The download Id.
+     * @param {Number|string} downId The download Id.
      * @return {boolean} true if done otherwise false if the Id is not saved.
      * @throws {TypeError} if the Id is not an number.
      */

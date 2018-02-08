@@ -33,7 +33,7 @@ describe('Module : helper/storage.js', function() {
         global.localStorage = mockLocalStorage;
     });
 
-
+    // BEFORE, MUST export THIS FUNCTION ON storage.js
     describe.skip('_StorageHelper', function() {
         let nStoreHelp;
 
@@ -164,7 +164,7 @@ describe('Module : helper/storage.js', function() {
             expect(downNotifStoreHelp.save('123', 'mocky')).to.be.false;
         });
 
-        it.only('should get the id', () => {
+        it('should get the id', () => {
             expect(downNotifStoreHelp.get).to.be.a('function');
             const wrongIds = [null,'','a','mocky', { 'a': 1, 'b': [1, 2, 2, 3] }, Error('test')];
             wrongIds.forEach((id) => {
