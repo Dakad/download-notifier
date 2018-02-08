@@ -1,34 +1,41 @@
-    /*==========    Utilities Fonctions    ==========*/
+/* global chrome */
+/* global navigator */
 
-    /**
-     * Pseudo selector for #ID
-     * @param {string} id ID of the element WITHOUT #
-     * @returns {HTMLElement}
-     */
-    /* export */
-    export const _$ = id => document.getElementById(id);
+/**
+ * @author https://github.com/dakad
+ * @overview Utility Functions
+ * @version 1.0.0
+ */
 
-    /**
-     * Get the corresponding message to a specified key
-     * @param {string} key  Key of the message
-     * @return {string}
-     */
-    /* export */
-    export const _i18n = key => chrome.i18n.getMessage(key);
+/**
+ * Pseudo selector for #ID
+ * @param {string} id ID of the element WITHOUT #
+ * @returns {HTMLElement}
+ */
+/* export */
+export const _$ = id => document.getElementById(id);
 
-    /**
-     * Get the current navigator OS
-     * @return {String} Windows => Win, Mac => Mac, otherwise empty.
-     */
-    /* export */
-    export const _getOS = () => {
-        const _ua = navigator.userAgent.toLowerCase();
+/**
+ * Get the corresponding message to a specified key
+ * @param {string} key  Key of the message
+ * @return {string}
+ */
+/* export */
+export const _i18n = (key = '') => chrome.i18n.getMessage(key);
 
-        if (_ua.length) {
-            if (_ua.includes('windows')) {
-                return 'Win';
-            }
-            return (_ua.includes('Mac') ? 'mac' : '');
+/**
+ * Get the current navigator OS
+ * @return {String} Windows => Win, Mac => Mac, otherwise empty.
+ */
+/* export */
+export const _getOS = () => {
+    const _ua = navigator.userAgent.toLowerCase();
+
+    if (_ua.length) {
+        if (_ua.includes('windows')) {
+            return 'Win';
         }
-        return '';
-    };
+        return (_ua.includes('Mac') ? 'mac' : '');
+    }
+    return '';
+};

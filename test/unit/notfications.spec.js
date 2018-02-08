@@ -1,6 +1,6 @@
 /**
  * @author  https://github.com/dakad
- * @overview Test Unit for the utils.js modules
+ * @overview Test Unit for the notification.js modules
  */
 
 // -------------------------------------------------------------------
@@ -23,7 +23,7 @@ import locals from '../../app/_locales/en/messages.json'
 // chai.use(require('sinon-chai'));
 
 
-describe('Module :  utils.js', function() {
+describe.skip('Module :  notifications.js', function() {
 
     beforeEach(() => global.chrome = chrome);
 
@@ -47,14 +47,14 @@ describe('Module :  utils.js', function() {
             expect(chrome.i18n.getMessage.notCalled, 'i18n.getMessage should not be called').to.be.ok;
             const key = 'extName';
             _i18n(key);
-            // expect(chrome.i18n.getMessage.calledOnce, 'i18n.getMessage should be called').to.be.ok;
+            expect(chrome.i18n.getMessage.calledOnce, 'i18n.getMessage should be called').to.be.ok;
             expect(
                 chrome.i18n.getMessage.withArgs(key).called,
                 'i18n.getMessage should be called with specified args'
             ).to.be.ok;
         });
 
-        it.skip('should return data', () => {
+        it('should return data', () => {
             const I18nPlugin = chrome.plugins.I18nPlugin;
             chrome.registerPlugin(new I18nPlugin(locals));
 

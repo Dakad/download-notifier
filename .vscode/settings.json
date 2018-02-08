@@ -9,4 +9,7 @@
 
         }
     ],
+
+    "nodeTdd.testScript": "test:unit",
+    "nodeTdd.glob": "test/unit/**/*.spec.js"
 }

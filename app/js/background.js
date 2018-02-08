@@ -1,7 +1,11 @@
-//Author: Akad
+/* global chrome */
 
-//Date: 2016/Mar/05
-//Vesion: 0.1
+/**
+ * @author https://github.com/dakad
+ * @overview Background Script
+ * @version 1.0.0
+ * 
+ */
 
 
 /*======================Settings modifier========================*/
