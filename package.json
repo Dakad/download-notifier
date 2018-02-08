@@ -61,6 +61,7 @@
     "webpack-dev-server": "^2.11.1"
   },
   "dependencies": {
+    "chrome-promise": "^2.1.2",
     "pretty-bytes": "^4.0.2"
   }
 }
