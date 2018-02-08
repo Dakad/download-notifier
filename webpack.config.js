@@ -54,7 +54,11 @@ module.exports = {
             {
                 from: path.join(__dirname, 'app', 'assets'),
                 to: 'assets'
-            }
+            },
+            {
+                from: path.join(__dirname, 'app', '_locales'),
+                to: '_locales'
+            },
         ])
     ],
 
